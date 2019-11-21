@@ -18,10 +18,11 @@ router.post("/user/sign_up", async (req, res) => {
   const hash = SHA256(password + salt).toString(encBase64);
   // on sauvegarde en bdd username, token, salt et hash mais pas password !
   const user = new User({
-    username,
-    token,
-    salt,
-    hash
+    username: username,
+    email: email,
+    token: token,
+    salt: salt,
+    hash: hash
   });
   console.log("user créé", user);
   await user.save();
@@ -32,6 +33,31 @@ router.post("/user/sign_up", async (req, res) => {
       username: user.username
     }
   });
+});
+
+router.post("/user/log_in", async (req, res) => {
+  console.log("route log in");
+  const { email, password } = req.fields;
+  console.log("param recus", email, password);
+
+  const user = await User.findOne({ email: req.fields.email });
+  if (user) {
+    const hash = SHA256(password + user.salt).toString(encBase64);
+    if (user.hash === hash) {
+      console.log("user identifié et connecté");
+      res.json({
+        _id: user._id,
+        account: { username: user.username },
+        token: user.token
+      });
+    } else {
+      console.log("mot de passe incorrect");
+      res.status(401).json({ error: "Mot de passe incorrect" });
+    }
+  } else {
+    console.log("user non trouvé");
+    res.status(400).json({ error: "user not found" });
+  }
 });
 
 module.exports = router;

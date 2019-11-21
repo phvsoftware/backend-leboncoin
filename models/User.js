@@ -12,7 +12,8 @@ const User = mongoose.model("User", {
     trim: true,
     lowercase: true,
     minlength: 6,
-    maxlength: 254
+    maxlength: 254,
+    required: true
   },
   token: {
     type: String,
