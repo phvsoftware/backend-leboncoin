@@ -23,6 +23,18 @@ router.get("/offer/with-count", async (req, res) => {
   }
 });
 
+router.get("/offer/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log("id demandé", id);
+    const offer = await Offers.findById(id);
+    console.log("offre trouvée", offer);
+    res.json(offer);
+  } catch (error) {
+    res.status(400).json({ message: "An error occurred" });
+  }
+});
+
 router.post("/publish", async (req, res) => {
   // on lit le header authorization
   const auth = req.headers.authorization;
