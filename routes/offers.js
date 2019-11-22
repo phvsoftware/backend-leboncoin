@@ -11,6 +11,18 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+router.get("/offer/with-count", async (req, res) => {
+  try {
+    const offers = await Offers.find();
+    console.log("nb offers", offers.length);
+    const result = { count: offers.length, offers: offers };
+    res.json(result);
+    console.log("fin");
+  } catch (error) {
+    res.status(400).json({ message: "An error occurred" });
+  }
+});
+
 router.post("/publish", async (req, res) => {
   // on lit le header authorization
   const auth = req.headers.authorization;
@@ -40,6 +52,7 @@ router.post("/publish", async (req, res) => {
   // si on a trouvé l'utilisateur on peut ajouter une annonce
   const { title, description, price } = req.fields;
   const userId = user._id;
+  const username = user.username;
 
   // upload de l'image
   try {
@@ -47,18 +60,17 @@ router.post("/publish", async (req, res) => {
       error,
       result
     ) {
-      console.log("publish 5.5");
       if (!error) {
         const url = result.secure_url;
         // sauvegarde dans la base
         const created = new Date().toJSON();
         const offer = new Offers({
-          title,
-          description,
-          price,
-          created,
-          url,
-          userId
+          pictures: [url],
+          title: title,
+          description: description,
+          price: price,
+          creator: { account: { username: username }, _id: userId },
+          created: created
         });
         await offer.save();
 

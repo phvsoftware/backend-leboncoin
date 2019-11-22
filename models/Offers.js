@@ -1,34 +1,17 @@
 const mongoose = require("mongoose");
 
 const Offers = mongoose.model("Offers", {
-  title: {
-    type: String,
-    minlength: 3,
-    maxlength: 50,
-    required: true
+  pictures: [],
+  title: String,
+  description: String,
+  price: Number,
+  creator: {
+    account: {
+      username: String
+    },
+    _id: String
   },
-  description: {
-    type: String,
-    minlength: 3,
-    maxlength: 254,
-    required: true
-  },
-  price: {
-    type: Number,
-    required: true
-  },
-  created: {
-    type: String,
-    required: true
-  },
-  url: {
-    type: String,
-    required: true
-  },
-  userId: {
-    type: String,
-    required: true
-  }
+  created: String
 });
 
 module.exports = Offers;
